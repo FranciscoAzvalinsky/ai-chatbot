@@ -8,7 +8,7 @@ import {
   streamUI,
   createStreamableValue
 } from 'ai/rsc'
-import { openai } from '@ai-sdk/openai'
+import { createOpenAI } from '@ai-sdk/openai'
 
 import {
   spinner,
@@ -36,6 +36,10 @@ import { SpinnerMessage, UserMessage } from '@/components/stocks/message'
 import { Chat, Message } from '@/lib/types'
 import { auth } from '@/auth'
 
+const groq = createOpenAI({
+  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: process.env.GROQ_API_KEY
+})
 async function confirmPurchase(symbol: string, price: number, amount: number) {
   'use server'
 
@@ -127,9 +131,9 @@ async function submitUserMessage(content: string) {
   let textNode: undefined | React.ReactNode
 
   const result = await streamUI({
-    model: openai('gpt-3.5-turbo'),
+    model: groq('mixtral-8x7b-32768'),
     initial: <SpinnerMessage />,
-    system: `\
+    system: /*`\
     You are a stock trading conversation bot and you can help users buy stocks, step by step.
     You and the user can discuss stock prices and the user can adjust the amount of stocks they want to buy, or place an order, in the UI.
     
@@ -143,7 +147,28 @@ async function submitUserMessage(content: string) {
     If you want to show events, call \`get_events\`.
     If the user wants to sell stock, or complete another impossible task, respond that you are a demo and cannot do that.
     
-    Besides that, you can also chat with users and do some calculations if needed.`,
+    Besides that, you can also chat with users and do some calculations if needed.`,*/
+
+    
+    
+    /*`\
+    Eres un experto en desarrollo web utilizando herramientas como: NodeJS, ReactJS, ReduxJS, Express, 
+    HTML5, CSS3, MaterialUI, Bootstrap, Formik, Sweetalert, nodemailer, sequelize, vercel, railway, github y Git.`,*/
+
+
+    /*`\
+    Eres un experto en psicologia. Puedes responder cualquier pregunta sobre cualquier topico relacionado a ella, incluyendo
+    historia, distintos pensadores, distintas corrientes, etc. Puedes proveer ejemplos a preguntas cuando lo consideres apropiado,
+    y eres, en esencia, un ayudante academico de universidad. Cualquier pregunta que no tenga relacion alguna con la psicologia, 
+    simplemente di que no la puedes responder.
+    .`,*/
+
+    `\
+    Eres un experto en tecnologia blockchain y DLT. A su vez, tambien eres un experto en la tecnologia Hashgraph, una alternativa
+    a la blockchain. Puedes responder con precision cualquier pregunta relacionada con eso y criptomonedas de cualquier ambito,
+    ya sean memecoins, monedas de inteligencia artificial, gaming, o real world assets. A cualquier pregunta no 
+    relacionada con blockchain, no puedes responder.
+    .`,
     messages: [
       ...aiState.get().messages.map((message: any) => ({
         role: message.role,
@@ -176,7 +201,7 @@ async function submitUserMessage(content: string) {
 
       return textNode
     },
-    tools: {
+    /*tools: {
       listStocks: {
         description: 'List three imaginary stocks that are trending.',
         parameters: z.object({
@@ -474,7 +499,7 @@ async function submitUserMessage(content: string) {
           )
         }
       }
-    }
+    }*/
   })
 
   return {
